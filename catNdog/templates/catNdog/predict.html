@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Predict Image</title>
+    <style>
+        {
+        font-size:30px;
+        }
+    </style>
+</head>
+<body>
+    <h3 align="center">Cat vs Dog Classifier</h3>
+    <p>To predict whether the picture is of a Dog or a Cat.
+        <ol>
+            <li>Upload the photo.</li>
+            <li>Click the <strong>"Predict"</strong> button</li>
+        </ol>
+    </p>
+    <br>
+    <input id="select-image" type="file">
+    <button id="predict">Predict</button>
+    <p><strong>Prediction</strong></p>
+    <p><span id="prediction"></span></p>
+    <img id="selected-image" src=""/>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <script>
+        let base64Image;
+        $("#select-image").change(function(){
+            let reader= new FileReader();
+            reader.onload = function(e){
+                let dataURL = reader.result;
+                $('#selected-image').attr("src", dataURL);
+                base64Image = dataURL.replace("data:image/jpg;base64,","");
+                console.log(base64Image);
+            }
+            reader.readAsDataURL($("#select-image")[0].files[0]);
+            $("#dog-prediction").text("");
+            $("#cat-prediction").text("");
+        });
+
+        $("#predict").click(function(){
+            let message = {
+                image: base64Image
+            }
+            console.log(message);
+            $.post("http://localhost:8000/predict", JSON.stringify(message), function(response){
+                $("#prediction").text(response.prediction);
+                console.log(response);
+            });
+        });
+    </script>
+</body>
+</html>
